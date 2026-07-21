@@ -13,7 +13,12 @@ load_dotenv()
 
 app = FastAPI(title="S-SHM Platform API", version="1.0.0")
 
-origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "*").split(",")]
+origins_from_env = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
+# Known frontend URL, hardcoded as a guaranteed fallback so login isn't
+# blocked by a missed/unsaved Render environment variable edit.
+KNOWN_ORIGINS = ["https://sshm-ui.onrender.com", "http://localhost:5500", "http://127.0.0.1:5500"]
+origins = list(set(origins_from_env + KNOWN_ORIGINS)) or ["*"]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
