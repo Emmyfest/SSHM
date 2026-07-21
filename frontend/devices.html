@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-SHM | Devices</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>renderLayout({ activePage: "devices", title: "Device management", subtitle: "ESP32 edge devices" });</script>
+
+  <template id="content-template">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Registered devices</div>
+        <button class="btn btn-primary btn-sm" id="add-btn">+ Register device</button>
+      </div>
+
+      <div id="add-form-wrap" style="display:none; margin-bottom:20px; padding:18px; border:1px solid var(--border); border-radius:var(--radius);">
+        <div class="grid-2">
+          <div>
+            <div class="field"><label>Device ID</label><input id="f-device-id" placeholder="ESP32-JB001"></div>
+            <div class="field"><label>Linked building ID</label><input id="f-building-id" placeholder="JB001"></div>
+          </div>
+          <div>
+            <div class="field"><label>Firmware version</label><input id="f-firmware" placeholder="v1.2.0"></div>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="save-btn">Save device</button>
+        <button class="btn" id="cancel-btn">Cancel</button>
+      </div>
+
+      <table>
+        <thead><tr><th>Device</th><th>Building</th><th>Firmware</th><th>Battery</th><th>GSM signal</th><th>Last seen</th><th></th></tr></thead>
+        <tbody id="devices-table"><tr><td colspan="7" class="text-faint">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </template>
+
+  <script src="js/devices.js"></script>
+</body>
+</html>

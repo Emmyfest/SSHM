@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-SHM | Dashboard</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    renderLayout({ activePage: "dashboard", title: "Dashboard", subtitle: "Overview of all monitored buildings" });
+  </script>
+
+  <template id="content-template">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Buildings monitored</div>
+        <div class="kpi-value" id="kpi-total">—</div>
+        <div class="kpi-sub">Across all locations</div>
+      </div>
+      <div class="kpi-card safe">
+        <div class="kpi-label">Safe</div>
+        <div class="kpi-value" id="kpi-safe">—</div>
+        <div class="kpi-sub">Within normal thresholds</div>
+      </div>
+      <div class="kpi-card warning">
+        <div class="kpi-label">Warning</div>
+        <div class="kpi-value" id="kpi-warning">—</div>
+        <div class="kpi-sub">Needs attention</div>
+      </div>
+      <div class="kpi-card danger">
+        <div class="kpi-label">Critical</div>
+        <div class="kpi-value" id="kpi-danger">—</div>
+        <div class="kpi-sub">Immediate action required</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Building locations<span>live status</span></div>
+        </div>
+        <div id="map"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Recent alerts<span>last 24h</span></div>
+          <a href="alerts.html" class="btn btn-sm">View all</a>
+        </div>
+        <div id="recent-alerts">Loading...</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">All buildings</div>
+        <a href="monitoring.html" class="btn btn-sm">Open live monitoring</a>
+      </div>
+      <table>
+        <thead><tr><th>Building</th><th>City</th><th>Status</th><th>Health index</th><th>Strain</th><th>Tilt</th><th>Vibration</th><th></th></tr></thead>
+        <tbody id="buildings-table"><tr><td colspan="8" class="text-faint">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </template>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

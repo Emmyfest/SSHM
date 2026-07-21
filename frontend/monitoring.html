@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-SHM | Live Monitoring</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>renderLayout({ activePage: "monitoring", title: "Live monitoring", subtitle: "Auto-refreshing every 5s" });</script>
+
+  <template id="content-template">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Live sensor feed<span id="last-update"></span></div>
+        <span class="pulse-dot safe live" title="Live"></span>
+      </div>
+      <table>
+        <thead><tr><th>Building</th><th>Status</th><th>Strain</th><th>Tilt</th><th>Vibration</th><th>Battery</th><th>GSM</th><th>Last reading</th></tr></thead>
+        <tbody id="live-table"><tr><td colspan="8" class="text-faint">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </template>
+
+  <script src="js/monitoring.js"></script>
+</body>
+</html>

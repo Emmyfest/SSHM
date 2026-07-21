@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-SHM | Alerts</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>renderLayout({ activePage: "alerts", title: "Alerts timeline", subtitle: "" });</script>
+
+  <template id="content-template">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">All alerts</div>
+        <div class="tabs" id="filter-tabs">
+          <div class="tab active" data-filter="">All</div>
+          <div class="tab" data-filter="open">Open</div>
+          <div class="tab" data-filter="resolved">Resolved</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Building</th><th>Severity</th><th>Reason</th><th>Time</th><th>Status</th><th></th></tr></thead>
+        <tbody id="alerts-table"><tr><td colspan="6" class="text-faint">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </template>
+
+  <script src="js/alerts.js"></script>
+</body>
+</html>

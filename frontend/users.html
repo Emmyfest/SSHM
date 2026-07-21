@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-SHM | Users</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>renderLayout({ activePage: "users", title: "User management", subtitle: "Admin only" });</script>
+
+  <template id="content-template">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Team members</div>
+        <button class="btn btn-primary btn-sm" id="add-btn">+ Add user</button>
+      </div>
+
+      <div id="add-form-wrap" style="display:none; margin-bottom:20px; padding:18px; border:1px solid var(--border); border-radius:var(--radius);">
+        <div class="grid-2">
+          <div class="field"><label>Username</label><input id="f-username"></div>
+          <div class="field"><label>Password</label><input id="f-password" type="password"></div>
+        </div>
+        <div class="field">
+          <label>Role</label>
+          <select id="f-role"><option value="viewer">Viewer</option><option value="engineer">Engineer</option><option value="admin">Admin</option></select>
+        </div>
+        <button class="btn btn-primary" id="save-btn">Create user</button>
+        <button class="btn" id="cancel-btn">Cancel</button>
+      </div>
+
+      <table>
+        <thead><tr><th>Username</th><th>Role</th><th>Created</th><th></th></tr></thead>
+        <tbody id="users-table"><tr><td colspan="4" class="text-faint">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </template>
+
+  <script src="js/users.js"></script>
+</body>
+</html>

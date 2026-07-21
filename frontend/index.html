@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-SHM | Sign in</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-page">
+
+  <div class="login-card">
+    <div class="login-brand">
+      <span class="pulse-dot safe live"></span>
+      <div class="login-brand-text">S-SHM Platform</div>
+    </div>
+    <div class="login-sub">Structural Health Monitoring &middot; Admin console</div>
+
+    <form id="login-form">
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" id="login-btn">
+        Sign in
+      </button>
+      <div class="login-error" id="login-error"></div>
+    </form>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    if (Auth.getToken()) window.location.href = "dashboard.html";
+
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("login-btn");
+      const errEl = document.getElementById("login-error");
+      errEl.textContent = "";
+      btn.textContent = "Signing in...";
+
+      try {
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+        const res = await Api.login(username, password);
+        Auth.setToken(res.access_token);
+        Auth.setUser(res.user);
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        errEl.textContent = err.message || "Invalid username or password";
+        btn.textContent = "Sign in";
+      }
+    });
+  </script>
+</body>
+</html>

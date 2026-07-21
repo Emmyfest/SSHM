@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-SHM | Building Detail</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>renderLayout({ activePage: "buildings", title: "Building detail", subtitle: "" });</script>
+
+  <template id="content-template">
+    <div class="panel" id="info-panel">
+      <div class="panel-header">
+        <div class="panel-title" id="building-title">Loading...</div>
+        <span id="building-status"></span>
+      </div>
+      <div class="kpi-grid" style="grid-template-columns: repeat(6,1fr);">
+        <div class="kpi-card"><div class="kpi-label">Health index</div><div class="kpi-value" id="d-health">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Strain</div><div class="kpi-value" id="d-strain">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Tilt</div><div class="kpi-value" id="d-tilt">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Vibration</div><div class="kpi-value" id="d-vibration">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Battery</div><div class="kpi-value" id="d-battery">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">GSM signal</div><div class="kpi-value" id="d-gsm">—</div></div>
+      </div>
+      <div class="grid-2" style="margin-top:6px;">
+        <div>
+          <div class="text-faint" style="font-size:12px; margin-bottom:4px;">OWNER</div>
+          <div id="d-owner" style="margin-bottom:12px;">—</div>
+          <div class="text-faint" style="font-size:12px; margin-bottom:4px;">ENGINEER</div>
+          <div id="d-engineer" style="margin-bottom:12px;">—</div>
+        </div>
+        <div>
+          <div class="text-faint" style="font-size:12px; margin-bottom:4px;">INSTALLATION DATE</div>
+          <div id="d-install" style="margin-bottom:12px;">—</div>
+          <div class="text-faint" style="font-size:12px; margin-bottom:4px;">FIRMWARE VERSION</div>
+          <div id="d-firmware" style="margin-bottom:12px;">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Trend history</div>
+        <div class="tabs" id="range-tabs">
+          <div class="tab active" data-range="24h">24h</div>
+          <div class="tab" data-range="7d">7d</div>
+          <div class="tab" data-range="month">Month</div>
+        </div>
+      </div>
+      <canvas id="trend-chart" height="90"></canvas>
+    </div>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="js/building-detail.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-SHM | Buildings</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>renderLayout({ activePage: "buildings", title: "Buildings", subtitle: "Registered structures & sites" });</script>
+
+  <template id="content-template">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">All buildings</div>
+        <button class="btn btn-primary btn-sm" id="add-btn">+ Add building</button>
+      </div>
+
+      <div id="add-form-wrap" style="display:none; margin-bottom:20px; padding:18px; border:1px solid var(--border); border-radius:var(--radius);">
+        <div class="grid-2">
+          <div>
+            <div class="field"><label>Building ID</label><input id="f-id" placeholder="JB001"></div>
+            <div class="field"><label>Name</label><input id="f-name" placeholder="Jabi Tower"></div>
+            <div class="field"><label>Owner</label><input id="f-owner"></div>
+            <div class="field"><label>City</label><input id="f-city"></div>
+          </div>
+          <div>
+            <div class="field"><label>Engineer</label><input id="f-engineer"></div>
+            <div class="field"><label>Installation date</label><input id="f-install" type="date"></div>
+            <div class="field"><label>GPS latitude</label><input id="f-lat" placeholder="9.0765"></div>
+            <div class="field"><label>GPS longitude</label><input id="f-lng" placeholder="7.3986"></div>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="save-btn">Save building</button>
+        <button class="btn" id="cancel-btn">Cancel</button>
+      </div>
+
+      <table>
+        <thead><tr><th>Building</th><th>Owner</th><th>City</th><th>Status</th><th>Health</th><th>Installed</th><th></th></tr></thead>
+        <tbody id="buildings-table"><tr><td colspan="7" class="text-faint">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </template>
+
+  <script src="js/buildings.js"></script>
+</body>
+</html>

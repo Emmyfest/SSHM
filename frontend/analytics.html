@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-SHM | Analytics</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>renderLayout({ activePage: "analytics", title: "Analytics", subtitle: "Portfolio-wide trends" });</script>
+
+  <template id="content-template">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Average health index over time</div>
+        <div class="tabs" id="range-tabs">
+          <div class="tab active" data-range="24h">24h</div>
+          <div class="tab" data-range="7d">7d</div>
+          <div class="tab" data-range="month">Month</div>
+        </div>
+      </div>
+      <canvas id="health-chart" height="80"></canvas>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Status distribution</div></div>
+        <canvas id="status-chart" height="200"></canvas>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Alerts by building</div></div>
+        <canvas id="alerts-chart" height="200"></canvas>
+      </div>
+    </div>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="js/analytics.js"></script>
+</body>
+</html>

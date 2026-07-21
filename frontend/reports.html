@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-SHM | Reports</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>renderLayout({ activePage: "reports", title: "Reports", subtitle: "Export readings for offline review" });</script>
+
+  <template id="content-template">
+    <div class="panel" style="max-width:560px;">
+      <div class="panel-header"><div class="panel-title">Generate a report</div></div>
+
+      <div class="field">
+        <label>Building</label>
+        <select id="f-building"><option value="">All buildings</option></select>
+      </div>
+      <div class="grid-2">
+        <div class="field"><label>From</label><input type="date" id="f-from"></div>
+        <div class="field"><label>To</label><input type="date" id="f-to"></div>
+      </div>
+      <div class="field">
+        <label>Format</label>
+        <select id="f-format">
+          <option value="csv">CSV</option>
+          <option value="pdf">PDF</option>
+          <option value="excel">Excel (.xlsx)</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="download-btn">Download report</button>
+      <div id="report-status" class="text-faint" style="margin-top:12px; font-size:12.5px;"></div>
+    </div>
+  </template>
+
+  <script src="js/reports.js"></script>
+</body>
+</html>
