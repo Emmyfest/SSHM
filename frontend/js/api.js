@@ -1,6 +1,6 @@
 // Central API client. Set API_BASE to your deployed FastAPI backend URL.
 const API_BASE = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-  ? "http://localhost:8000/api"
+  ? "https://sshm-ui.onrender.com/"
   : "https://sshm-3k4s.onrender.com/api";
 
 function getLiveSocketUrl() {
