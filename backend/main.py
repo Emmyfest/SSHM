@@ -7,7 +7,7 @@ from database.db import ensure_indexes, users_col
 from auth.security import hash_password
 from auth.jwt_handler import decode_access_token
 from services.ws_manager import manager
-from routes import auth, buildings, readings, alerts, devices, users, settings, analytics, reports
+from routes import auth, buildings, readings, alerts, devices, users, settings, analytics, reports, crack_reports
 
 load_dotenv()
 
