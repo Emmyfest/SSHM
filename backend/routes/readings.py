@@ -81,7 +81,10 @@ async def ingest_reading(payload: ReadingIn, x_device_key: str = Header(default=
 
 @router.get("/live")
 async def live_readings(user: dict = Depends(get_current_user)):
-    buildings = await buildings_col.find().to_list(500)
+    owner_building = user.get("buildingID")
+    query = {"buildingID": owner_building} if owner_building else {}
+    buildings = await buildings_col.find(query).to_list(500)
+
     results = []
     for b in buildings:
         latest = await readings_col.find_one({"buildingID": b["buildingID"]}, sort=[("timestamp", -1)])
