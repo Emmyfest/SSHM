@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from models.schemas import BuildingCreate
 from database.db import buildings_col, readings_col
-from auth.dependencies import get_current_user
+from auth.dependencies import get_current_user, require_admin
 from services.settings_service import get_thresholds
 from services.health_index import compute_health_index, determine_status
 
@@ -19,6 +19,13 @@ RANGE_TO_DELTA = {
 def _serialize(doc: dict) -> dict:
     doc["_id"] = str(doc["_id"])
     return doc
+
+
+def _assert_can_access(user: dict, building_id: str):
+    """Owners may only touch their own building; admins/others pass through."""
+    owner_building = user.get("buildingID")
+    if owner_building and owner_building != building_id:
+        raise HTTPException(status_code=403, detail="You don't have access to this building")
 
 
 async def _with_latest_reading(building: dict, thresholds: dict) -> dict:
@@ -44,12 +51,16 @@ async def _with_latest_reading(building: dict, thresholds: dict) -> dict:
 @router.get("")
 async def list_buildings(user: dict = Depends(get_current_user)):
     thresholds = await get_thresholds()
-    buildings = await buildings_col.find().to_list(500)
+    owner_building = user.get("buildingID")
+
+    query = {"buildingID": owner_building} if owner_building else {}
+    buildings = await buildings_col.find(query).to_list(500)
     return [await _with_latest_reading(_serialize(b), thresholds) for b in buildings]
 
 
 @router.get("/{building_id}")
 async def get_building(building_id: str, user: dict = Depends(get_current_user)):
+    _assert_can_access(user, building_id)
     building = await buildings_col.find_one({"buildingID": building_id})
     if not building:
         raise HTTPException(status_code=404, detail="Building not found")
@@ -59,6 +70,7 @@ async def get_building(building_id: str, user: dict = Depends(get_current_user))
 
 @router.get("/{building_id}/history")
 async def get_building_history(building_id: str, range: str = "24h", user: dict = Depends(get_current_user)):
+    _assert_can_access(user, building_id)
     delta = RANGE_TO_DELTA.get(range, RANGE_TO_DELTA["24h"])
     cutoff = datetime.utcnow() - delta
     cursor = readings_col.find(
@@ -70,8 +82,10 @@ async def get_building_history(building_id: str, range: str = "24h", user: dict 
     return readings
 
 
+# ---- Mutations: admin only. Owners view their building; they don't manage the registry. ----
+
 @router.post("")
-async def create_building(payload: BuildingCreate, user: dict = Depends(get_current_user)):
+async def create_building(payload: BuildingCreate, user: dict = Depends(require_admin)):
     existing = await buildings_col.find_one({"buildingID": payload.buildingID})
     if existing:
         raise HTTPException(status_code=409, detail="A building with this ID already exists")
@@ -81,7 +95,7 @@ async def create_building(payload: BuildingCreate, user: dict = Depends(get_curr
 
 
 @router.put("/{building_id}")
-async def update_building(building_id: str, payload: BuildingCreate, user: dict = Depends(get_current_user)):
+async def update_building(building_id: str, payload: BuildingCreate, user: dict = Depends(require_admin)):
     result = await buildings_col.update_one({"buildingID": building_id}, {"$set": payload.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Building not found")
@@ -89,7 +103,7 @@ async def update_building(building_id: str, payload: BuildingCreate, user: dict 
 
 
 @router.delete("/{building_id}")
-async def delete_building(building_id: str, user: dict = Depends(get_current_user)):
+async def delete_building(building_id: str, user: dict = Depends(require_admin)):
     result = await buildings_col.delete_one({"buildingID": building_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Building not found")
