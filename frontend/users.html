@@ -13,7 +13,7 @@
   <template id="content-template">
     <div class="panel">
       <div class="panel-header">
-        <div class="panel-title">Team members</div>
+        <div class="panel-title">Team members &amp; house owners</div>
         <button class="btn btn-primary btn-sm" id="add-btn">+ Add user</button>
       </div>
 
@@ -24,15 +24,24 @@
         </div>
         <div class="field">
           <label>Role</label>
-          <select id="f-role"><option value="viewer">Viewer</option><option value="engineer">Engineer</option><option value="admin">Admin</option></select>
+          <select id="f-role">
+            <option value="viewer">Viewer</option>
+            <option value="engineer">Engineer</option>
+            <option value="owner">House owner</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="field" id="building-field-wrap" style="display:none;">
+          <label>Linked building (this owner will only see this one)</label>
+          <select id="f-building"></select>
         </div>
         <button class="btn btn-primary" id="save-btn">Create user</button>
         <button class="btn" id="cancel-btn">Cancel</button>
       </div>
 
       <table>
-        <thead><tr><th>Username</th><th>Role</th><th>Created</th><th></th></tr></thead>
-        <tbody id="users-table"><tr><td colspan="4" class="text-faint">Loading...</td></tr></tbody>
+        <thead><tr><th>Username</th><th>Role</th><th>Linked building</th><th>Created</th><th></th></tr></thead>
+        <tbody id="users-table"><tr><td colspan="5" class="text-faint">Loading...</td></tr></tbody>
       </table>
     </div>
   </template>
