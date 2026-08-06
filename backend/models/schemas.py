@@ -1,6 +1,5 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
 
 
 class LoginRequest(BaseModel):
@@ -11,7 +10,8 @@ class LoginRequest(BaseModel):
 class UserCreate(BaseModel):
     username: str
     password: str
-    role: str = "viewer"  # viewer | engineer | admin
+    role: str = "viewer"  # viewer | engineer | admin | owner
+    buildingID: Optional[str] = None  # required when role == "owner"; ignored otherwise
 
 
 class BuildingCreate(BaseModel):
