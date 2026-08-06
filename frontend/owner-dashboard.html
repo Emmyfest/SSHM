@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-SHM | My House</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>renderLayout({ activePage: "owner-dashboard", title: "My House", subtitle: "" });</script>
+
+  <template id="content-template">
+    <div class="panel" id="info-panel">
+      <div class="panel-header">
+        <div class="panel-title" id="building-title">Loading...</div>
+        <span id="building-status"></span>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">Health index</div><div class="kpi-value" id="d-health">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Strain</div><div class="kpi-value" id="d-strain">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Tilt</div><div class="kpi-value" id="d-tilt">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Vibration</div><div class="kpi-value" id="d-vibration">—</div></div>
+      </div>
+      <div class="text-faint" style="font-size:12px; margin-top:10px;">Last reading: <span id="d-last-reading">—</span></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Trend history</div>
+        <div class="tabs" id="range-tabs">
+          <div class="tab active" data-range="24h">24h</div>
+          <div class="tab" data-range="7d">7d</div>
+          <div class="tab" data-range="month">Month</div>
+        </div>
+      </div>
+      <canvas id="trend-chart" height="90"></canvas>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Recent alerts</div>
+        <a href="alerts.html" class="btn btn-sm">View all</a>
+      </div>
+      <div id="recent-alerts">Loading...</div>
+    </div>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="js/owner-dashboard.js"></script>
+</body>
+</html>
