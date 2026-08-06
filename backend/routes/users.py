@@ -3,7 +3,7 @@ from bson import ObjectId
 from datetime import datetime
 
 from models.schemas import UserCreate
-from database.db import users_col
+from database.db import users_col, buildings_col
 from auth.dependencies import require_admin
 from auth.security import hash_password
 
@@ -24,12 +24,23 @@ async def create_user(payload: UserCreate, user: dict = Depends(require_admin)):
     existing = await users_col.find_one({"username": payload.username})
     if existing:
         raise HTTPException(status_code=409, detail="Username already taken")
-    await users_col.insert_one({
+
+    doc = {
         "username": payload.username,
         "password_hash": hash_password(payload.password),
         "role": payload.role,
         "created_at": datetime.utcnow(),
-    })
+    }
+
+    if payload.role == "owner":
+        if not payload.buildingID:
+            raise HTTPException(status_code=400, detail="buildingID is required for the owner role")
+        building = await buildings_col.find_one({"buildingID": payload.buildingID})
+        if not building:
+            raise HTTPException(status_code=404, detail=f"No building found with ID {payload.buildingID}")
+        doc["buildingID"] = payload.buildingID
+
+    await users_col.insert_one(doc)
     return {"message": "User created"}
 
 
