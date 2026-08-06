@@ -12,7 +12,8 @@ const ICONS = {
   logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>',
 };
 
-const NAV_ITEMS = [
+// Full admin nav -- sees every building, manages the whole system
+const ADMIN_NAV_ITEMS = [
   { key: "dashboard", label: "Dashboard", href: "dashboard.html", icon: "dashboard" },
   { key: "buildings", label: "Buildings", href: "buildings.html", icon: "buildings" },
   { key: "monitoring", label: "Monitoring", href: "monitoring.html", icon: "monitoring" },
@@ -24,11 +25,20 @@ const NAV_ITEMS = [
   { key: "settings", label: "Settings", href: "settings.html", icon: "settings" },
 ];
 
+// Owner nav -- scoped to their one building only, no system-management pages
+const OWNER_NAV_ITEMS = [
+  { key: "owner-dashboard", label: "My House", href: "owner-dashboard.html", icon: "dashboard" },
+  { key: "alerts", label: "Alerts", href: "alerts.html", icon: "alerts" },
+  { key: "reports", label: "Reports", href: "reports.html", icon: "reports" },
+];
+
 function renderLayout({ activePage, title, subtitle }) {
   Auth.requireLogin();
   const user = Auth.getUser() || { username: "admin", role: "admin" };
+  const isOwner = user.role === "owner";
+  const navItems = isOwner ? OWNER_NAV_ITEMS : ADMIN_NAV_ITEMS;
 
-  const navHtml = NAV_ITEMS.map(item => `
+  const navHtml = navItems.map(item => `
     <a href="${item.href}" class="${item.key === activePage ? 'active' : ''}">
       ${ICONS[item.icon]}<span>${item.label}</span>
     </a>`).join("");
@@ -40,7 +50,7 @@ function renderLayout({ activePage, title, subtitle }) {
           <span class="pulse-dot safe live"></span>
           <div>
             <div class="sidebar-brand-text">S-SHM</div>
-            <div class="sidebar-brand-sub">STRUCTURAL HEALTH</div>
+            <div class="sidebar-brand-sub">${isOwner ? "HOMEOWNER VIEW" : "STRUCTURAL HEALTH"}</div>
           </div>
         </div>
         <nav class="sidebar-nav">${navHtml}</nav>
@@ -75,6 +85,7 @@ function renderLayout({ activePage, title, subtitle }) {
 
 async function refreshBellIndicator() {
   try {
+    // The backend already scopes this to the owner's building automatically
     const alerts = await Api.getAlerts("?status=open");
     const dot = document.getElementById("bell-dot");
     if (dot) dot.style.display = alerts.length > 0 ? "block" : "none";
