@@ -13,6 +13,11 @@ async def list_alerts(status: str = Query(default=None), limit: int = 100, user:
     query = {}
     if status:
         query["status"] = status
+
+    owner_building = user.get("buildingID")
+    if owner_building:
+        query["buildingID"] = owner_building
+
     cursor = alerts_col.find(query).sort("timestamp", -1).limit(limit)
     alerts = await cursor.to_list(limit)
     for a in alerts:
@@ -22,8 +27,15 @@ async def list_alerts(status: str = Query(default=None), limit: int = 100, user:
 
 @router.patch("/{alert_id}/resolve")
 async def resolve_alert(alert_id: str, user: dict = Depends(get_current_user)):
+    query = {"_id": ObjectId(alert_id)}
+
+    owner_building = user.get("buildingID")
+    if owner_building:
+        # Owners can only resolve alerts belonging to their own building
+        query["buildingID"] = owner_building
+
     result = await alerts_col.update_one(
-        {"_id": ObjectId(alert_id)},
+        query,
         {"$set": {"status": "resolved", "resolved_at": datetime.utcnow(), "resolved_by": user.get("sub")}},
     )
     if result.matched_count == 0:
