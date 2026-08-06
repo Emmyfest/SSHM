@@ -1,13 +1,16 @@
+# routes/crack_reports.py
 import json
-from fastapi import APIRouter, HTTPException, Header, UploadFile, Form
-from datetime import datetime
-from database.db import readings_col, buildings_col, devices_col, alerts_col
-from services.ws_manager import manager
 import os
+from datetime import datetime
+from fastapi import APIRouter, HTTPException, Header, UploadFile, Form
+from database.db import readings_col
+from services.ws_manager import manager
 
+router = APIRouter(prefix="/api/crack-reports", tags=["crack-reports"])
 DEVICE_API_KEY = os.getenv("DEVICE_API_KEY", "change_this_device_key")
 
-@router.post("/crack-reports")
+
+@router.post("")
 async def ingest_crack_report(
     image: UploadFile,
     report: str = Form(...),
@@ -22,8 +25,7 @@ async def ingest_crack_report(
         raise HTTPException(status_code=400, detail="Invalid report JSON")
 
     image_bytes = await image.read()
-    # TODO: save image_bytes to disk/S3/GridFS, store the resulting path/URL
-    # rather than the raw bytes, in your readings_col or a new crack_reports_col
+    # TODO: save image_bytes to disk/S3/GridFS, store resulting path/URL
 
     doc = {
         "device_id": report_data.get("device_id"),
