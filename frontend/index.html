@@ -13,7 +13,7 @@
       <span class="pulse-dot safe live"></span>
       <div class="login-brand-text">S-SHM Platform</div>
     </div>
-    <div class="login-sub">Structural Health Monitoring &middot; Admin console</div>
+    <div class="login-sub">Structural Health Monitoring &middot; Sign in</div>
 
     <form id="login-form">
       <div class="field">
@@ -33,7 +33,11 @@
 
   <script src="js/api.js"></script>
   <script>
-    if (Auth.getToken()) window.location.href = "dashboard.html";
+    function redirectForRole(user) {
+      window.location.href = user && user.role === "owner" ? "owner-dashboard.html" : "dashboard.html";
+    }
+
+    if (Auth.getToken()) redirectForRole(Auth.getUser());
 
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -48,7 +52,7 @@
         const res = await Api.login(username, password);
         Auth.setToken(res.access_token);
         Auth.setUser(res.user);
-        window.location.href = "dashboard.html";
+        redirectForRole(res.user);
       } catch (err) {
         errEl.textContent = err.message || "Invalid username or password";
         btn.textContent = "Sign in";
