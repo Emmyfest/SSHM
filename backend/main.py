@@ -36,6 +36,7 @@ app.include_router(users.router)
 app.include_router(settings.router)
 app.include_router(analytics.router)
 app.include_router(reports.router)
+app.include_router(crack_reports.router)
 
 
 @app.on_event("startup")
