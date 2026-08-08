@@ -47,7 +47,6 @@ async def ingest_crack_report(
 """
 
 
-```python
 # routes/crack_reports.py
 
 import json
