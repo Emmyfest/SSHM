@@ -65,7 +65,48 @@
         <tbody id="buildings-table"><tr><td colspan="8" class="text-faint">Loading...</td></tr></tbody>
       </table>
     </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          Crack reports
+          <span>Raspberry Pi camera feed</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span id="crack-live-indicator" style="display:none; font-size:12px; color:var(--text-dim); align-items:center; gap:6px;">
+            <span class="pulse-dot safe live"></span>live
+          </span>
+          <div class="tabs" id="crack-severity-tabs">
+            <div class="tab active" data-severity="all">All</div>
+            <div class="tab" data-severity="severe">Severe</div>
+            <div class="tab" data-severity="moderate">Moderate</div>
+            <div class="tab" data-severity="hairline">Hairline</div>
+          </div>
+        </div>
+      </div>
+      <div class="crack-grid" id="crack-grid">
+        <div class="empty-state">Loading crack reports...</div>
+      </div>
+    </div>
   </template>
+
+  <!-- Crack report lightbox -->
+  <div class="crack-modal-overlay" id="crack-modal-overlay">
+    <div class="crack-modal">
+      <div class="crack-modal-img-wrap">
+        <img id="crack-modal-img" src="" alt="Crack report image">
+      </div>
+      <div class="crack-modal-info">
+        <button class="crack-modal-close" id="crack-modal-close" aria-label="Close">&times;</button>
+        <div id="crack-modal-badge"></div>
+        <div class="crack-modal-row"><span>Device</span><span id="crack-modal-device" class="mono">&mdash;</span></div>
+        <div class="crack-modal-row"><span>Building</span><span id="crack-modal-building" class="mono">&mdash;</span></div>
+        <div class="crack-modal-row"><span>Timestamp</span><span id="crack-modal-time" class="mono">&mdash;</span></div>
+        <div class="crack-modal-row"><span>Cracks detected</span><span id="crack-modal-count" class="mono">&mdash;</span></div>
+        <div class="crack-modal-row"><span>Max width</span><span id="crack-modal-width" class="mono">&mdash;</span></div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/dashboard.js"></script>
