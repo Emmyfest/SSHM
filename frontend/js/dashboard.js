@@ -72,4 +72,132 @@
   } catch (err) {
     document.getElementById("recent-alerts").innerHTML = `<div class="text-faint">Could not load alerts.</div>`;
   }
+
+  // ---- Crack reports (Raspberry Pi camera feed) ----
+  initCrackReports();
 })();
+
+let crackReports = [];
+let crackSeverityFilter = "all";
+
+function crackSeverityOf(r) {
+  return (r.summary && (r.summary.max_severity || r.summary.severity)) || "none";
+}
+function crackCountOf(r) {
+  return (r.summary && r.summary.crack_count) ?? (r.cracks ? r.cracks.length : 0);
+}
+function crackMaxWidth(r) {
+  if (!r.cracks || !r.cracks.length) return null;
+  const widths = r.cracks.map(c => c.width_mm ?? c.width_px ?? 0);
+  const unit = r.cracks[0].width_mm != null ? "mm" : "px";
+  return `${Math.max(...widths)} ${unit}`;
+}
+function crackSeverityBadgeClass(sev) {
+  return sev === "severe" ? "danger" : sev === "moderate" ? "warning" : "safe";
+}
+
+async function initCrackReports() {
+  const grid = document.getElementById("crack-grid");
+
+  try {
+    crackReports = await Api.getCrackReports(50);
+    crackReports.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    renderCrackGrid();
+  } catch (err) {
+    grid.innerHTML = `<div class="empty-state">Could not load crack reports: ${err.message}</div>`;
+  }
+
+  document.querySelectorAll("#crack-severity-tabs .tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll("#crack-severity-tabs .tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      crackSeverityFilter = tab.dataset.severity;
+      renderCrackGrid();
+    });
+  });
+
+  document.getElementById("crack-modal-close").onclick = closeCrackModal;
+  document.getElementById("crack-modal-overlay").addEventListener("click", (e) => {
+    if (e.target.id === "crack-modal-overlay") closeCrackModal();
+  });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeCrackModal(); });
+
+  connectCrackLiveFeed();
+}
+
+function renderCrackGrid() {
+  const grid = document.getElementById("crack-grid");
+  const filtered = crackSeverityFilter === "all"
+    ? crackReports
+    : crackReports.filter(r => crackSeverityOf(r) === crackSeverityFilter);
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state">No crack reports${crackSeverityFilter === "all" ? " yet" : " match this filter"}.</div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(r => {
+    const sev = crackSeverityOf(r);
+    const imgUrl = Api.getCrackReportImageUrl(r.image_url);
+    const media = imgUrl
+      ? `<img src="${imgUrl}" alt="Crack report" loading="lazy" onerror="this.parentElement.innerHTML='<div class=&quot;crack-no-image&quot;>No image</div>'">`
+      : `<div class="crack-no-image">No image</div>`;
+    return `
+      <div class="crack-card" data-id="${r.id || ""}">
+        <div class="crack-card-media">
+          <span class="crack-severity-pill ${sev}">${sev}</span>
+          ${media}
+        </div>
+        <div class="crack-card-body">
+          <strong style="font-size:13px;">${r.device_id || "Unknown device"}</strong>
+          <div class="text-faint mono" style="font-size:11.5px; margin-top:2px;">${timeAgo(r.timestamp)}</div>
+          <div class="text-dim" style="font-size:12.5px; margin-top:4px;">${crackCountOf(r)} crack(s) detected</div>
+        </div>
+      </div>`;
+  }).join("");
+
+  grid.querySelectorAll(".crack-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const report = crackReports.find(r => (r.id || "") === card.dataset.id);
+      if (report) openCrackModal(report);
+    });
+  });
+}
+
+function openCrackModal(r) {
+  const sev = crackSeverityOf(r);
+  const imgUrl = Api.getCrackReportImageUrl(r.image_url);
+  const img = document.getElementById("crack-modal-img");
+  img.src = imgUrl || "";
+  img.style.display = imgUrl ? "block" : "none";
+
+  document.getElementById("crack-modal-badge").innerHTML =
+    `<span class="badge ${crackSeverityBadgeClass(sev)}"><span class="pulse-dot ${crackSeverityBadgeClass(sev)}"></span>${sev.toUpperCase()}</span>`;
+  document.getElementById("crack-modal-device").textContent = r.device_id || "—";
+  document.getElementById("crack-modal-building").textContent = r.buildingID || r.building_name || "—";
+  document.getElementById("crack-modal-time").textContent = r.timestamp ? new Date(r.timestamp).toLocaleString() : "—";
+  document.getElementById("crack-modal-count").textContent = crackCountOf(r);
+  document.getElementById("crack-modal-width").textContent = crackMaxWidth(r) || "—";
+
+  document.getElementById("crack-modal-overlay").classList.add("open");
+}
+
+function closeCrackModal() {
+  document.getElementById("crack-modal-overlay").classList.remove("open");
+}
+
+function connectCrackLiveFeed() {
+  try {
+    const ws = new WebSocket(getLiveSocketUrl());
+    ws.onopen = () => { document.getElementById("crack-live-indicator").style.display = "inline-flex"; };
+    ws.onclose = () => { document.getElementById("crack-live-indicator").style.display = "none"; };
+    ws.onmessage = (event) => {
+      let data;
+      try { data = JSON.parse(event.data); } catch { return; }
+      if (data.type === "crack_report") {
+        crackReports.unshift(data);
+        renderCrackGrid();
+      }
+    };
+  } catch { /* live updates optional -- history already loaded */ }
+}
