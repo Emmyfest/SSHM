@@ -444,4 +444,3 @@ async def get_crack_report_image(
             filename
         )
     )
-```
