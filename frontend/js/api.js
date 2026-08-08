@@ -73,4 +73,11 @@ const Api = {
 
   getSettings: () => apiRequest("/settings"),
   updateSettings: (data) => apiRequest("/settings", { method: "PUT", body: JSON.stringify(data) }),
+
+  getCrackReports: (limit = 50) => apiRequest(`/crack-reports?limit=${limit}`),
+  getCrackReportImageUrl: (imageUrl) => {
+    if (!imageUrl) return null;
+    const wsBase = API_BASE.replace(/\/api$/, "");
+    return imageUrl.startsWith("http") ? imageUrl : `${wsBase}${imageUrl}`;
+  },
 };
