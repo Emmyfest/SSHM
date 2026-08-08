@@ -229,3 +229,61 @@ tbody tr:hover { background: rgba(255,255,255,0.02); }
 .login-brand-text { font-size: 20px; font-weight: 700; }
 .login-sub { color: var(--text-faint); font-size: 13px; margin-bottom: 28px; }
 .login-error { color: var(--danger); font-size: 12.5px; margin-top: 10px; min-height: 16px; }
+
+/* ---------- Crack reports panel ---------- */
+.crack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+.crack-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; cursor: pointer; transition: border-color 0.15s, transform 0.15s;
+}
+.crack-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+.crack-card-media { position: relative; width: 100%; aspect-ratio: 4/3; background: var(--bg); overflow: hidden; }
+.crack-card-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.crack-no-image {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  color: var(--text-faint); font-size: 12px; background: var(--bg);
+}
+.crack-severity-pill {
+  position: absolute; top: 8px; left: 8px; padding: 3px 9px; border-radius: 20px;
+  font-size: 10.5px; font-weight: 700; font-family: var(--font-mono); text-transform: uppercase;
+  letter-spacing: 0.4px; color: #fff;
+}
+.crack-severity-pill.severe { background: var(--danger); }
+.crack-severity-pill.moderate { background: var(--warning); }
+.crack-severity-pill.hairline { background: #EAB308; color: #422006; }
+.crack-severity-pill.none { background: var(--safe); }
+.crack-card-body { padding: 12px 14px; }
+
+.crack-modal-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.55);
+  display: none; align-items: center; justify-content: center; z-index: 100; padding: 24px;
+}
+.crack-modal-overlay.open { display: flex; }
+.crack-modal {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  max-width: 800px; width: 100%; max-height: 86vh; overflow: auto;
+  display: grid; grid-template-columns: 1.3fr 1fr;
+}
+.crack-modal-img-wrap {
+  background: var(--bg); display: flex; align-items: center; justify-content: center; min-height: 240px;
+}
+.crack-modal-img-wrap img { width: 100%; height: 100%; object-fit: contain; max-height: 86vh; }
+.crack-modal-info { padding: 24px; display: flex; flex-direction: column; gap: 4px; }
+.crack-modal-close {
+  position: sticky; top: 0; margin-left: auto; background: var(--card-hover);
+  border: 1px solid var(--border); border-radius: 50%; width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center; color: var(--text-dim);
+  font-size: 18px; line-height: 1;
+}
+.crack-modal-close:hover { color: var(--text); border-color: var(--accent); }
+.crack-modal-row { display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.crack-modal-row:last-child { border-bottom: none; }
+.crack-modal-row span:first-child { color: var(--text-faint); }
+
+@media (max-width: 720px) {
+  .crack-modal { grid-template-columns: 1fr; }
+}
