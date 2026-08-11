@@ -1,58 +1,9 @@
-"""# routes/crack_reports.py
-import json
-import os
-from datetime import datetime
-from fastapi import APIRouter, HTTPException, Header, UploadFile, Form
-from database.db import readings_col
-from services.ws_manager import manager
-
-router = APIRouter(prefix="/api/crack-reports", tags=["crack-reports"])
-DEVICE_API_KEY = os.getenv("DEVICE_API_KEY", "change_this_device_key")
-
-
-@router.post("")
-async def ingest_crack_report(
-    image: UploadFile,
-    report: str = Form(...),
-    x_device_key: str = Header(default=None),
-):
-    if x_device_key != DEVICE_API_KEY:
-        raise HTTPException(status_code=401, detail="Invalid device key")
-
-    try:
-        report_data = json.loads(report)
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=400, detail="Invalid report JSON")
-
-    image_bytes = await image.read()
-    # TODO: save image_bytes to disk/S3/GridFS, store resulting path/URL
-
-    doc = {
-        "device_id": report_data.get("device_id"),
-        "timestamp": datetime.utcnow(),
-        "summary": report_data.get("summary"),
-        "cracks": report_data.get("cracks"),
-        # "image_path": saved_path,
-    }
-    await readings_col.insert_one(doc)
-
-    await manager.broadcast({
-        "type": "crack_report",
-        "device_id": doc["device_id"],
-        "summary": doc["summary"],
-        "timestamp": doc["timestamp"].isoformat(),
-    })
-
-    return {"message": "Crack report recorded", "summary": doc["summary"]}
-"""
-
-
 # routes/crack_reports.py
 
 import json
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import (
@@ -102,6 +53,26 @@ ALLOWED_IMAGE_TYPES = {
     "image/png": ".png",
     "image/webp": ".webp",
 }
+
+
+# ============================================================
+# HELPER — always return a tz-aware UTC ISO string
+# ============================================================
+
+def to_utc_iso(dt):
+    """
+    Convert a datetime to an ISO 8601 string that always carries a UTC
+    offset (+00:00), so frontend `new Date(...)` parses it correctly as
+    UTC instead of silently treating it as local time.
+
+    Handles the case where MongoDB/Motor hands back a naive datetime
+    (no tzinfo) even though the value is UTC.
+    """
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.isoformat()
 
 
 # ============================================================
@@ -203,7 +174,7 @@ async def ingest_crack_report(
 
     doc = {
         "device_id": report_data.get("device_id"),
-        "timestamp": datetime.utcnow(),
+        "timestamp": datetime.now(timezone.utc),  # FIX: tz-aware UTC instead of naive utcnow()
         "summary": report_data.get("summary"),
         "cracks": report_data.get("cracks"),
 
@@ -262,7 +233,7 @@ async def ingest_crack_report(
 
         "cracks": doc["cracks"],
 
-        "timestamp": doc["timestamp"].isoformat(),
+        "timestamp": to_utc_iso(doc["timestamp"]),  # FIX: guaranteed offset-aware string
 
         "image_url": image_url,
     })
@@ -284,7 +255,7 @@ async def ingest_crack_report(
 
         "image_url": image_url,
 
-        "timestamp": doc["timestamp"].isoformat(),
+        "timestamp": to_utc_iso(doc["timestamp"]),  # FIX: guaranteed offset-aware string
     }
 
 
@@ -322,7 +293,7 @@ async def list_crack_reports(
 
             "device_id": d.get("device_id"),
 
-            "timestamp": d.get("timestamp"),
+            "timestamp": to_utc_iso(d.get("timestamp")),  # FIX: was raw datetime, now safe ISO string
 
             "summary": d.get("summary"),
 
